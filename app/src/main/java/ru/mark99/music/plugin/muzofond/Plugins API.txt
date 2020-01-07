@@ -1,0 +1,43 @@
+API Plugin <-> Manager
+
+Format: intent, where [String] msg = command name
+
+">" = manager to plugin (request)
+"<" = plugin to manager (response)
+
+[support of this method is required always]
+> [String] msg: "getSummaryPluginInfo"
+< [String] msg: "getSummaryPluginInfo"
+< [String] name: "Example plugin"
+< [String] desc: "Description of example plugin"
+< [String] version: "1.0"
+< [List<String>] methods: ['getSummaryPluginInfo']
+
+[support required if was announced in "getSummaryPluginInfo->methods"]
+> [String] msg: "doAnonymousSearch"
+> [String] requestString: "test searched string"
+< [String] msg: "doAnonymousSearch"
+< [String] status: "successfully" / "error" or etc
+< [String] tracks: <json array tracks *1>
+
+> [String] msg: "doAnonymousGetPopular"
+< [String] msg: "doAnonymousGetPopular"
+< [String] status: "successfully" / "error" or etc
+< [String] tracks: <json array tracks *1>
+
+
+
+
+
+*1
+[
+    {
+[required]  "name": <name track>
+		    "bitrate": 320
+[required]  "time": 131 <length in seconds>
+		    "size": <size in bytes>
+		    "lyrics": <lyrics>
+		    "picture_link": <link>
+[required]  "link": <http*.mp3 (progressive) or m3u8 (hls)>
+	}
+]
