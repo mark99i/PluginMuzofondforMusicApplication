@@ -1,9 +1,15 @@
 API Plugin <-> Manager
 
-Format: intent, where [String] msg = command name
+Format: intent
 
 ">" = manager to plugin (request)
 "<" = plugin to manager (response)
+
+required in all intents:
+[String] parameter _from_ = getPackageName()
+[String] parameter msg = command name
+
+if request intent have parameter [Integer] _id_, in response it should be copied from the request
 
 [support of this method is required always]
 > [String] msg: "getSummaryPluginInfo"
@@ -17,20 +23,23 @@ Format: intent, where [String] msg = command name
 > [String] msg: "doAnonymousSearch"
 > [String] requestString: "test searched string"
 < [String] msg: "doAnonymousSearch"
-< [String] status: "successfully" / "error" or etc
-< [String] tracks: <json array tracks *1>
+< [String] status: "successfully" / "error"
+< (status == successfully) [String] tracks: <json array tracks *1>
+< (status == error) [String] errorString: <error description>
 
 > [String] msg: "doAnonymousGetPopular"
 < [String] msg: "doAnonymousGetPopular"
-< [String] status: "successfully" / "error" or etc
-< [String] tracks: <json array tracks *1>
+< [String] status: "successfully" / "error"
+< (status == successfully) [String] tracks: <json array tracks *1>
+< (status == error) [String] errorString: <error description>
+
 
 
 
 
 
 *1
-[
+"tracks": [	
     {
 [required]  "name": <name track>
 		    "bitrate": 320

@@ -29,6 +29,7 @@ public class MuzofondPlugin extends Service
         Log.d(TAG, "onCreate");
 
         muzofondParser = new MuzofondParser();
+        muzofondParser.init(this);
 
         // Put support methods
         myMethods = new ArrayList<>();
@@ -59,7 +60,7 @@ public class MuzofondPlugin extends Service
                         .putExtra("methods", myMethods )
                         .putExtra("version", getAppVersion());
 
-                sendToManager(msg, answer);
+                sendToManager(msg, answer, request);
                 break;
             }
 
@@ -78,9 +79,10 @@ public class MuzofondPlugin extends Service
                 else
                 {
                     answer.putExtra("status", "error");
+                    answer.putExtra("errorString", muzofondParser.getLastError());
                 }
 
-                sendToManager(msg, answer);
+                sendToManager(msg, answer, request);
                 break;
             }
         }
@@ -104,17 +106,26 @@ public class MuzofondPlugin extends Service
                 return;
             }
 
-            Log.d(TAG, "onReceive msg: " + msg);
+            Log.d(TAG, "onReceive from: " + from + "\tmsg: " + msg +
+                    "\tid: " + intent.getIntExtra("_id_", -1));
 
             new Thread(() -> MuzofondPlugin.this.onReceive(msg, intent)).start();
 
         }
     };
 
-    void sendToManager(String msg, Intent answer)
+    void sendToManager(String msg, Intent answer, Intent request)
     {
+        Log.d(TAG, "Sending response to manager: " + msg +
+                "\tid: " + request.getIntExtra("_id_", -1) +
+                "\tstatus: " + answer.getStringExtra("status"));
+
+        int id = request.getIntExtra("_id_", -1);
+
         answer.setAction(managerPackageName);
         answer.putExtra("_from_", getPackageName());
+        if (id != -1)
+            answer.putExtra("_id_", id);
         answer.putExtra("msg", msg);
         this.sendBroadcast(answer);
     }
