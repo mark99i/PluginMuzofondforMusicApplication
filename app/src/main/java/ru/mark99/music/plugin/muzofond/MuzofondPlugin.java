@@ -34,7 +34,7 @@ public class MuzofondPlugin extends Service
         // Put support methods
         myMethods = new ArrayList<>();
         myMethods.add("getSummaryPluginInfo");
-        myMethods.add("doAnonymousSearch");
+        myMethods.add("doSearch");
 
         registerReceiver(receiver, new IntentFilter(getPackageName()));
     }
@@ -55,16 +55,18 @@ public class MuzofondPlugin extends Service
             case "getSummaryPluginInfo":
             {
                 Intent answer = new Intent()
-                        .putExtra("name", "Muzofond")
-                        .putExtra("desc", "Plugin for integration MusicApp with Muzofond")
+                        .putExtra("name", "Muzofond Plugin")
+                        .putExtra("desc", "Плагин интеграции MusicApp с Muzofond\nСайт: muzofond.fm")
                         .putExtra("methods", myMethods )
+                        .putExtra("shortName", "MF")
+                        .putExtra("supportAuth", false)
                         .putExtra("version", getAppVersion());
 
                 sendToManager(msg, answer, request);
                 break;
             }
 
-            case "doAnonymousSearch":
+            case "doSearch":
             {
                 String requestString = request.getStringExtra("requestString");
                 JSONArray resultSearch = muzofondParser.doAnonymousSearch(requestString);
@@ -73,12 +75,12 @@ public class MuzofondPlugin extends Service
 
                 if (resultSearch != null)
                 {
-                    answer.putExtra("status", "successfully");
+                    answer.putExtra("successfully", true);
                     answer.putExtra("tracks", resultSearch.toString());
                 }
                 else
                 {
-                    answer.putExtra("status", "error");
+                    answer.putExtra("successfully", false);
                     answer.putExtra("errorString", muzofondParser.getLastError());
                 }
 
